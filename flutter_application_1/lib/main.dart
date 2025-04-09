@@ -26,10 +26,21 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  var currentWord = WordPair.random();
+  var word = WordPair.random();
 
   void getNextWord() {
-    currentWord = WordPair.random();
+    word = WordPair.random();
+    notifyListeners();
+  }
+
+  var favoriteWords = <WordPair>[];
+
+  void toggleFavorite() {
+    if (favoriteWords.contains(word)) {
+      favoriteWords.remove(word);
+    } else {
+      favoriteWords.add(word);
+    }
     notifyListeners();
   }
 }
@@ -38,7 +49,7 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    var wordPair = appState.currentWord;
+    var wordPair = appState.word;
 
     return Scaffold(
       body: Center(
@@ -47,11 +58,30 @@ class MyHomePage extends StatelessWidget {
           children: [
             BigCard(wordPair: wordPair),
             SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                appState.getNextWord();
-              },
-              child: Text('Next'),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    appState.toggleFavorite();
+                  },
+                  label: Text('Like'),
+                  icon: Icon(
+                    Icons.favorite,
+                    color:
+                        appState.favoriteWords.contains(wordPair)
+                            ? Colors.red
+                            : Colors.grey,
+                  ),
+                ),
+                SizedBox(width: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    appState.getNextWord();
+                  },
+                  child: Text('Next'),
+                ),
+              ],
             ),
           ],
         ),
