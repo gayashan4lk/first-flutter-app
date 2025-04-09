@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         title: 'Namer App',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         ),
         home: MyHomePage(),
       ),
@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var currentWord = WordPair.random();
-  var myHobby = 'coding';
 
   void getNextWord() {
     currentWord = WordPair.random();
@@ -39,20 +38,49 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+    var wordPair = appState.currentWord;
+
     return Scaffold(
-      body: Column(
-        children: [
-          Text('A random idea:'),
-          Text(appState.currentWord.asLowerCase),
-          Text(appState.hashCode.toString()),
-          Text(appState.myHobby),
-          ElevatedButton(
-            onPressed: () {
-              appState.getNextWord();
-            },
-            child: Text('Next'),
-          ),
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            BigCard(wordPair: wordPair),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                appState.getNextWord();
+              },
+              child: Text('Next'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class BigCard extends StatelessWidget {
+  const BigCard({super.key, required this.wordPair});
+
+  final WordPair wordPair;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+    );
+
+    return Card(
+      color: theme.colorScheme.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(
+          '${wordPair.first} ${wordPair.second}',
+          style: style,
+          semanticsLabel: '${wordPair.first} ${wordPair.second}',
+        ),
       ),
     );
   }
