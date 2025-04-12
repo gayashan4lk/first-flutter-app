@@ -27,13 +27,12 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var word = WordPair.random();
+  var favoriteWords = <WordPair>[];
 
   void getNextWord() {
     word = WordPair.random();
     notifyListeners();
   }
-
-  var favoriteWords = <WordPair>[];
 
   void toggleFavorite() {
     if (favoriteWords.contains(word)) {
@@ -59,10 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (selectedIndex) {
       case 0:
         page = GeneratorPage();
-        break;
       case 1:
-        page = Placeholder();
-        break;
+        page = FavoritesPage();
       default:
         throw UnimplementedError('No widget for $selectedIndex');
     }
@@ -173,6 +170,34 @@ class BigCard extends StatelessWidget {
           semanticsLabel: '${wordPair.first} ${wordPair.second}',
         ),
       ),
+    );
+  }
+}
+
+class FavoritesPage extends StatelessWidget {
+  const FavoritesPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
+    if (appState.favoriteWords.isEmpty) {
+      return const Center(child: Text('No favorites yet.'));
+    }
+    return ListView(
+      padding: const EdgeInsets.all(32),
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Text('You have ${appState.favoriteWords.length} favorites'),
+        ),
+        ...appState.favoriteWords.map(
+          (word) => ListTile(
+            leading: Icon(Icons.favorite, size: 18),
+            title: Text('${word.first} ${word.second}'),
+          ),
+        ),
+      ],
     );
   }
 }
